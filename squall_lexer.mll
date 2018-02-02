@@ -1,6 +1,7 @@
 (* LEXER for the SQUALL controlled language *)
 
 {
+
   open Lexing;;
   open Parser;;
 
@@ -15,8 +16,8 @@
       "maybe", MAYBE;
       "of", OF;
       "a", A;
-      "an", "A";
-      "the", "THE";
+      "an", A;
+      "the", THE;
       "thing", THING;
       "that", THAT;
       "such", SUCH;
@@ -25,7 +26,7 @@
       "is", IS;
       "are", IS;
       "have", HAVE;
-      "has", HAS;
+      "has", HAVE;
       "where", WHERE;
       "whether", WHETHER;
       "thing", THING;
@@ -49,6 +50,7 @@
     let pos = lexbuf.lex_curr_p in
     lexbuf.lex_curr_p <- {pos with pos_lnum = pos.pos_lnum + 1; pos_bol = pos.pos_cnum}
   ;;
+
 }
 
 let alpha = ['a'-'z' 'A'-'Z']
@@ -64,4 +66,3 @@ rule token = parse
     {id_or_keyword (lexeme lexbuf)}
   |_
     {raise (Lexical_error (lexeme lexbuf))}
-    {EOF}
