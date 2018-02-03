@@ -2,7 +2,6 @@
 
 %{
 
-  open Squall_ast;;
   open Parsing;;
   open Squall_ast;;
 
@@ -28,7 +27,6 @@
 %token HAVE
 %token WHERE
 %token WHETHER
-%token THING
 %token WHAT
 %token HOW
 %token MANY
@@ -53,12 +51,12 @@
 
 /* Point d'entre */
 
-%start file
-%type <lambda_ast> sentence
+%start sentence
+%type <Squall_ast.lambda_ast> sentence
 
 %%
 
-sentence: np vp {mk_tn (App($1 $2))}
+sentence: np vp {mk_tn (Var("lal"))}(*{mk_tn (App($1, $2))}*)
 ;
 
 np:
@@ -66,17 +64,30 @@ np:
 ;
 
 vp:
-  |P1 {let x = mk_var () in mk_tn (Lam(x, App(mk_t (Var($1)) P1, mk_tn (Var(x)))))}
-  |P2 NP
+  |p1 {let x = mk_var () in mk_tn (Lam(x, App($1, mk_tn (Var(x)))))}
+  |p2 np
   {
-    let x = mk_var () in
-    let y = mk_var () in
-    mk_tn (Lam(x, App(mk_t (Var($2)) NP, mk_tn (Lam(y, App(mk_tn (App(mk_t (Var($1)) P2, mk_tn (Var(x)))), mk_tn (Var(y))))))))
+    let x = mk_var () in mk_tn (Var(x))
+(*    let y = mk_var () in
+    mk_tn
+      (Lam(
+        x,
+        App(
+          mk_t (Var($2)) NP,
+          mk_tn
+            (Lam(
+              y,
+              App(
+                mk_tn
+                  (App(
+                    mk_t (Var($1)) P2,
+                    mk_tn (Var(x)))),
+                mk_tn (Var(y))))))))*)
   }
 ;
 
 p1:
-  |TERM {let x = mk_var () in mk_tn (Lam(x, Stat(mk_tn (Var(x)), mk_tn (Var("rdf:type")), mk_t (Var($1)) Term)))}
+  |TERM {let x = mk_var () in mk_t (Lam(x, Stat(mk_tn (Var(x)), mk_tn (Var("rdf:type")), mk_t (Var($1)) Term))) P1}
 ;
 
 p2:
@@ -84,6 +95,6 @@ p2:
   {
     let x = mk_var () in
     let y = mk_var () in
-    mk_tn (Lam(x, Lam(y, Stat(mk_tn (Var(x)), mk_t (Var($1)) Term, mk_tn (Var(y))))))
+    mk_t (Lam(x, Lam(y, Stat(mk_tn (Var(x)), mk_t (Var($1)) Term, mk_tn (Var(y)))))) P2
   }
 ;

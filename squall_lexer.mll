@@ -3,7 +3,7 @@
 {
 
   open Lexing;;
-  open Parser;;
+  open Squall_parser;;
 
   exception Lexical_error of string;;
 
@@ -29,7 +29,6 @@
       "has", HAVE;
       "where", WHERE;
       "whether", WHETHER;
-      "thing", THING;
       "what", WHAT;
       "how", HOW;
       "many", MANY;
