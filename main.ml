@@ -10,7 +10,7 @@ let verbose = ref false;;
 let input_file = ref "";;
 let output_file = ref "";;
 
-let usage = "usage: scala [options] file.lus";;
+let usage = "usage: squallc [options] file.txt";;
 
 let set_file f s = f := s;;
 
@@ -78,7 +78,10 @@ let () =
   let buf = Lexing.from_string content in
 
   try
-    let p = Squall_parser.sentence Squall_lexer.token buf in
+    let s = Squall_parser.sentence Squall_lexer.token buf in
+    Printf.printf "Lambda :\n\n%s\n" (Squall_ast.show_lambda_ast s);
+    let s_reduced = Squall_reduction.reduction s in
+    Printf.printf "Reduced :\n\n%s\n" (Squall_ast.show_lambda_ast s_reduced);
     exit 0
   with
   |Squall_lexer.Lexical_error(str) ->

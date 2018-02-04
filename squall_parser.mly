@@ -6,8 +6,6 @@
   open Squall_ast;;
 
   let loc () = symbol_start_pos (), symbol_end_pos ();;
-  let mk_t t sem = (t, sem);;
-  let mk_tn t = (t, None);;
 
 %}
 
@@ -56,38 +54,38 @@
 
 %%
 
-sentence: np vp {mk_tn (Var("lal"))}(*{mk_tn (App($1, $2))}*)
+sentence:
+  np vp {mk_t (LApp($1, $2)) S_tag}
 ;
 
 np:
-  TERM {let x = mk_var () in mk_tn (Lam(x, App(mk_tn (Var(x)), mk_t (Var($1)) Term)))}
+  TERM
+  {
+    let x = mk_var () in
+    mk_tn (LLam(x, mk_tn (LApp(mk_tn (LVar(x)), mk_t (LVar($1)) NP_tag))))
+  }
 ;
 
 vp:
-  |p1 {let x = mk_var () in mk_tn (Lam(x, App($1, mk_tn (Var(x)))))}
+  |p1
+  {
+    let x = mk_var () in
+    mk_t (LLam(x, mk_tn (LApp($1, mk_tn (LVar(x)))))) VP_tag
+  }
   |p2 np
   {
-    let x = mk_var () in mk_tn (Var(x))
-(*    let y = mk_var () in
-    mk_tn
-      (Lam(
-        x,
-        App(
-          mk_t (Var($2)) NP,
-          mk_tn
-            (Lam(
-              y,
-              App(
-                mk_tn
-                  (App(
-                    mk_t (Var($1)) P2,
-                    mk_tn (Var(x)))),
-                mk_tn (Var(y))))))))*)
+    let x = mk_var () in
+    let y = mk_var () in
+    mk_t (LLam(x, mk_tn (LApp($2, mk_tn (LLam(y, mk_tn (LApp(mk_tn (LApp($1, mk_tn (LVar(x)))), mk_tn (LVar(y)))))))))) VP_tag
   }
 ;
 
 p1:
-  |TERM {let x = mk_var () in mk_t (Lam(x, Stat(mk_tn (Var(x)), mk_tn (Var("rdf:type")), mk_t (Var($1)) Term))) P1}
+  |TERM
+  {
+    let x = mk_var () in
+    mk_t (LLam(x, mk_tn (LStat(mk_tn (LVar(x)), mk_tn (LVar("rdf:type")), mk_t (LVar($1)) Term_tag)))) P1_tag
+  }
 ;
 
 p2:
@@ -95,6 +93,6 @@ p2:
   {
     let x = mk_var () in
     let y = mk_var () in
-    mk_t (Lam(x, Lam(y, Stat(mk_tn (Var(x)), mk_t (Var($1)) Term, mk_tn (Var(y)))))) P2
+    mk_t (LLam(x, mk_tn (LLam(y, mk_tn (LStat(mk_tn (LVar(x)), mk_t (LVar($1)) Term_tag, mk_tn (LVar(y)))))))) P2_tag
   }
 ;

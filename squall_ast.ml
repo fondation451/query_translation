@@ -5,21 +5,27 @@ let mk_var =
 ;;
 
 type lambda_term =
-  |Var of string
-  |App of lambda_ast * lambda_ast
-  |Lam of string * lambda_term
-  |Stat of lambda_ast * lambda_ast * lambda_ast
-  |Not of lambda_ast
-  |And of lambda_ast
-  |Or of lambda_ast
-  |Option of lambda_ast
+  |LVar of string
+  |LApp of lambda_ast * lambda_ast
+  |LLam of string * lambda_ast
+  |LStat of lambda_ast * lambda_ast * lambda_ast
+  |LNot of lambda_ast
+  |LAnd of lambda_ast * lambda_ast
+  |LOr of lambda_ast * lambda_ast
+  |LOption of lambda_ast
 
 and lambda_tag =
-  |S |NP |VP |P1 |P2
-  |Det |NG1 |NG2 |AR
-  |App |Rel |AP
-  |Term |None
+  |S_tag |NP_tag |VP_tag |P1_tag |P2_tag
+  |Det_tag |NG1_tag |NG2_tag |AR_tag
+  |App_tag |Rel_tag |AP_tag
+  |Term_tag |None_tag
 
 and lambda_ast =
   lambda_term * lambda_tag
+
+[@@deriving show { with_path = false }]
 ;;
+
+let mk_t t sem = (t, sem);;
+
+let mk_tn t = (t, None_tag);;

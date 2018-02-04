@@ -1,5 +1,6 @@
 # Compiled source
 _build/
+squallc
 *.native
 
 # VIM files
