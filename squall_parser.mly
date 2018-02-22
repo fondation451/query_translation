@@ -9,6 +9,7 @@
 
 %}
 
+%token EOF
 %token NOT
 %token AND
 %token OR
@@ -41,8 +42,8 @@
 
 
 %left WHERE
-%left OR
 %left AND
+%left OR
 %left MAYBE
 %left NOT
 
@@ -55,7 +56,7 @@
 %%
 
 sentence:
-  np vp {mk_t (LApp($1, $2)) S_tag}
+  |delta(np) delta(vp) EOF {mk_t (LApp($1, $2)) S_tag}
 ;
 
 np:
@@ -67,12 +68,12 @@ np:
 ;
 
 vp:
-  |p1
+  |delta(p1)
   {
     let x = mk_var () in
     mk_t (LLam(x, mk_tn (LApp($1, mk_tn (LVar(x)))))) VP_tag
   }
-  |p2 np
+  |delta(p2) delta(np)
   {
     let x = mk_var () in
     let y = mk_var () in
@@ -95,4 +96,12 @@ p2:
     let y = mk_var () in
     mk_t (LLam(x, mk_tn (LLam(y, mk_tn (LStat(mk_tn (LVar(x)), mk_t (LVar($1)) Term_tag, mk_tn (LVar(y)))))))) P2_tag
   }
+;
+
+delta(syntagm):
+  |NOT d1 = delta(syntagm) { mk_tn (LNot(d1)) }
+  |d1 = delta(syntagm) AND d2 = delta(syntagm) { mk_tn (LAnd(d1, d2)) }
+  |d1 = delta(syntagm) OR d2 = delta(syntagm) { mk_tn (LOr(d1, d2)) }
+  |MAYBE d1 = delta(syntagm) { mk_tn (LOption(d1)) }
+  |syntagm { $1 }
 ;

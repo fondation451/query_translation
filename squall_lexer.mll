@@ -63,5 +63,6 @@ rule token = parse
     {token lexbuf}
   |ident
     {id_or_keyword (lexeme lexbuf)}
+  |eof {EOF}
   |_
     {raise (Lexical_error (lexeme lexbuf))}

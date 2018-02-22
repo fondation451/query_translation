@@ -8,17 +8,16 @@ let rec reduction s =
   let t, tag = s in
   match t with
   |LApp(s1, s2) -> begin
-    try
-      reduction (instanciate_lambda s1 s2)
-    with App_No_Lambda -> reduction (mk_t (LApp(reduction s1, reduction s2)) tag)
+    match s1 with
+    |LLam(x, s_lam), _ -> reduction (substitute s_lam x s2)
+    |_ ->
+      let new_s = (mk_t (LApp(reduction s1, reduction s2)) tag) in
+      if s <> new_s then
+        reduction new_s
+      else
+        new_s
   end
   |_ -> s
-
-and instanciate_lambda lambda arg =
-  let lambda_t, lambda_tag = lambda in
-  match lambda_t with
-  |LLam(x, s) -> substitute s x arg
-  |_ -> raise App_No_Lambda
 
 and substitute s x v =
   let t, tag = s in
