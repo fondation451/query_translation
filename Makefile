@@ -2,7 +2,7 @@
 
 SHELL      := bash
 TARGET     := main.native
-JOUJOU     := squallc
+SQUALLC    := squallc
 OCAMLBUILD :=\
   ocamlbuild \
     -classic-display \
@@ -15,10 +15,10 @@ OCAMLBUILD :=\
 
 all:
 	@ $(OCAMLBUILD) -quiet $(TARGET)
-	@ ln -sf $(TARGET) $(JOUJOU)
+	@ ln -sf $(TARGET) $(SQUALLC)
 
 clean:
 	rm -f *~
 	rm -f tests/*.c tests/*.out
 	$(OCAMLBUILD) -clean
-	rm -f $(TARGET) $(JOUJOU)
+	rm -f $(TARGET) $(SQUALLC)
