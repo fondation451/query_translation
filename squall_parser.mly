@@ -9,37 +9,9 @@
 
 %}
 
-%token EOF
-%token NOT
-%token AND
-%token OR
-%token MAYBE
-%token OF
-%token A
-%token THE
-%token THING
-%token THAT
-%token SUCH
-%token WHICH
-%token WHOSE
-%token IS
-%token HAVE
-%token WHERE
-%token WHETHER
-%token WHAT
-%token HOW
-%token MANY
-%token SOME
-%token EVERY
-%token NO
-%token AT
-%token LEAST
-%token FOR
-%token THERE
-%token IN
-%token GRAPH
+%token EOF NOT AND OR MAYBE OF A THE THING THAT SUCH WHICH WHOSE IS HAVE WHERE
+%token WHETHER WHAT HOW MANY SOME EVERY NO AT LEAST FOR THERE IN GRAPH
 %token <string> TERM
-
 
 %left WHERE
 %left AND
@@ -47,61 +19,58 @@
 %left MAYBE
 %left NOT
 
-
-/* Point d'entre */
-
 %start sentence
 %type <Squall_ast.lambda_ast> sentence
 
 %%
 
 sentence:
-  |delta(np) delta(vp) EOF {mk_t (LApp($1, $2)) S_tag}
+  | delta(np) delta(vp) EOF { LApp($1, $2) }
 ;
 
 np:
   TERM
   {
     let x = mk_var () in
-    mk_tn (LLam(x, mk_tn (LApp(mk_tn (LVar(x)), mk_t (LVar($1)) NP_tag))))
+    LLam(x, (LApp(LVar x, LVar $1)))
   }
 ;
 
 vp:
-  |delta(p1)
+  | delta(p1)
   {
     let x = mk_var () in
-    mk_t (LLam(x, mk_tn (LApp($1, mk_tn (LVar(x)))))) VP_tag
+    LLam(x, LApp($1,  LVar(x)))
   }
-  |delta(p2) delta(np)
+  | delta(p2) delta(np)
   {
     let x = mk_var () in
     let y = mk_var () in
-    mk_t (LLam(x, mk_tn (LApp($2, mk_tn (LLam(y, mk_tn (LApp(mk_tn (LApp($1, mk_tn (LVar(x)))), mk_tn (LVar(y)))))))))) VP_tag
+    LLam(x, LApp($2, LLam(y, LApp(LApp($1, LVar x), LVar y))))
   }
 ;
 
 p1:
-  |TERM
+  | TERM
   {
     let x = mk_var () in
-    mk_t (LLam(x, mk_tn (LStat(mk_tn (LVar(x)), mk_tn (LVar("rdf:type")), mk_t (LVar($1)) Term_tag)))) P1_tag
+    LLam(x, LStat(LVar x, LVar("rdf:type"), LVar $1))
   }
 ;
 
 p2:
-  |TERM
+  | TERM
   {
     let x = mk_var () in
     let y = mk_var () in
-    mk_t (LLam(x, mk_tn (LLam(y, mk_tn (LStat(mk_tn (LVar(x)), mk_t (LVar($1)) Term_tag, mk_tn (LVar(y)))))))) P2_tag
+    LLam(x, LLam(y, LStat(LVar x, LVar $1, LVar y)))
   }
 ;
 
 delta(syntagm):
-  |NOT d1 = delta(syntagm) { mk_tn (LNot(d1)) }
-  |d1 = delta(syntagm) AND d2 = delta(syntagm) { mk_tn (LAnd(d1, d2)) }
-  |d1 = delta(syntagm) OR d2 = delta(syntagm) { mk_tn (LOr(d1, d2)) }
-  |MAYBE d1 = delta(syntagm) { mk_tn (LOption(d1)) }
-  |syntagm { $1 }
+  | NOT d1 = delta(syntagm) { LNot(d1) }
+  | d1 = delta(syntagm) AND d2 = delta(syntagm) { LAnd(d1, d2) }
+  | d1 = delta(syntagm) OR d2 = delta(syntagm) { LOr(d1, d2) }
+  | MAYBE d1 = delta(syntagm) { LOption(d1) }
+  | syntagm { $1 }
 ;

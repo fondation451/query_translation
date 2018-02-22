@@ -1,29 +1,29 @@
 (* Main *)
 
-open Printf;;
-open Lexing;;
-open Format;;
+open Printf
+open Lexing
+open Format
 
-let parse_only = ref false;;
-let verbose = ref false;;
+let parse_only = ref false
+let verbose = ref false
 
-let input_file = ref "";;
-let output_file = ref "";;
+let input_file = ref ""
+let output_file = ref ""
 
-let usage = "usage: squallc [options] file.txt";;
+let usage = "usage: squallc [options] file.txt"
 
-let set_file f s = f := s;;
+let set_file f s = f := s
 
 let options = [
   "--parse-only", Arg.Set parse_only, "  Execute only syntactic analysis";
   "-v", Arg.Set verbose, "  Verbose mode"
-];;
+]
 
 let localisation pos =
   let l = pos.pos_lnum in
   let c = pos.pos_cnum - pos.pos_bol + 1 in
   eprintf "File \"%s\", line %d, characters %d-%d:\n" !input_file l (c-1) c
-;;
+
 
 let file_to_string file =
   let f = open_in file in
@@ -35,9 +35,8 @@ let file_to_string file =
   let out = loop "" in
   close_in f;
   out
-;;
 
-let string_of_char c = String.make 1 c;;
+let string_of_char c = String.make 1 c
 
 let preprocess_str str =
   let len = String.length str in
@@ -50,7 +49,6 @@ let preprocess_str str =
     else
       loop (i+1) (out ^ (string_of_char (String.get str i)))
   in loop 0 ""
-;;
 
 let () =
   Arg.parse options (set_file input_file) usage;
@@ -84,9 +82,8 @@ let () =
     Printf.printf "Reduced :\n\n%s\n" (Squall_ast.show_lambda_ast s_reduced);
     exit 0
   with
-  |Squall_lexer.Lexical_error(str) ->
+  | Squall_lexer.Lexical_error(str) ->
     (localisation (Lexing.lexeme_start_p buf);
     eprintf "Lexing error@.";
     Printf.printf "%s\n" str;
     exit 1)
-;;
