@@ -11,10 +11,13 @@
 
 (* TODO: Fix ambiguities *)
 (* TODO: Still not implemented *)
-(* %token WHETHER WHAT THERE SOME HOW MANY EVERY NO AT LEAST FOR IN GRAPH *)
+(* %token THERE SOME EVERY NO AT LEAST FOR IN GRAPH *)
 
 (* Misc *)
 %token THING EOF
+
+(* Queries *)
+%token WHETHER WHAT HOW MANY
 
 (* Determinants *)
 %token A THE
@@ -43,7 +46,12 @@ sentence:
   | np=noun_phrase vp=verb_phrase
     (* np vp *)
     { LApp(np, vp) }
-  | s1=sentence WHERE s2=sentence { LWhere(s1, s2) }
+  | s1=sentence WHERE s2=sentence
+    (*  where s1 s2 *)
+    { LWhere(s1, s2) }
+  | WHETHER s=sentence
+    (* ask s *)
+    { LAsk s }
 
 noun_phrase:
   | TERM
@@ -73,10 +81,23 @@ noun_phrase:
             LLam(x, LApp(det, init_ng2_x))),
           LVar d)))
     }
+  | WHAT
+    (* λd.(select (and thing d)) *)
+    {
+      let d = mk_var() in
+      LLam(d, LSelect(LAnd(LThing, LVar d)))
+    }
+(* TODO:
+    | WHOSE ng2=nominal_group2
+    (* ≡ the ng2 of what *)
+    {
+
+    }
+*)
 
 determinant:
   | A
-    (* λd1.λd2.(exBEts (and d1 d2 )) *)
+    (* λd1.λd2.(exists (and d1 d2 )) *)
     {
       let d1 = mk_var() in
       let d2 = mk_var() in
@@ -89,6 +110,21 @@ determinant:
       let d2 = mk_var() in
       LLam(d1, LLam(d2, LThe(LVar d1, LVar d2)))
     }
+  | WHICH
+    (* λd1.λd2.(select (and d1 d2)) *)
+    {
+      let d1 = mk_var() in
+      let d2 = mk_var() in
+      LLam(d1, LLam(d2, LSelect(LAnd(LVar d1, LVar d2))))
+    }
+  | HOW MANY
+    (*λd1.λd2.(count (and d1 d2)) *)
+    {
+      let d1 = mk_var() in
+      let d2 = mk_var() in
+      LLam(d1, LLam(d2, LCount(LAnd(LVar d1, LVar d2))))
+    }
+
 
 nominal_group1:
   | THING ar=appositions_and_relatives

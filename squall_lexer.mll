@@ -29,12 +29,12 @@
       "are", BE;
       "have", HAVE;
       "has", HAVE;
-      "where", WHERE
-      (*
+      "where", WHERE;
       "whether", WHETHER;
       "what", WHAT;
       "how", HOW;
       "many", MANY;
+      (*
       "some", SOME;
       "every", EVERY;
       "no", NO;
@@ -61,12 +61,12 @@ let digit = ['0'-'9']
 let ident = alpha (alpha | '_' | digit)*
 
 rule token = parse
-  |'\n'
+  | '\n'
     {newline lexbuf; token lexbuf}
-  |[' ' '\t' '\r']+
+  | [' ' '\t' '\r']+
     {token lexbuf}
-  |ident
+  | ident
     {id_or_keyword (lexeme lexbuf)}
-  |eof {EOF}
-  |_
+  | eof {EOF}
+  | _
     {raise (Lexical_error (lexeme lexbuf))}
