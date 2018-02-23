@@ -23,6 +23,8 @@ type lambda_term =
   | LAsk of lambda_ast
   | LSelect of lambda_ast
   | LCount of lambda_ast
+  | LForall of lambda_ast * lambda_ast
+  | LAtleast of int * lambda_ast
 
 and lambda_ast =
   lambda_term

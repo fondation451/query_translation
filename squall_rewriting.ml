@@ -37,3 +37,5 @@ and substitute s x v = match s with
   | LAsk s -> LAsk(substitute s x v)
   | LSelect s -> LSelect(substitute s x v)
   | LCount s -> LCount(substitute s x v)
+  | LForall(s1, s2) -> LForall(substitute s1 x v, substitute s2 x v)
+  | LAtleast(i, s) -> LAtleast(i, substitute s x v)

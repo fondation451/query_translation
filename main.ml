@@ -76,11 +76,11 @@ let () =
   try
     let s = Squall_parser.parse_sentence Squall_lexer.token buf in
     Printf.printf "Lambda :\n\n%s\n" (Squall_ast.show_lambda_ast s);
-    let s_reduced = Squall_reduction.beta_reduce s in
+    let s_reduced = Squall_rewriting.beta_reduce s in
     Printf.printf "Reduced :\n\n%s\n" (Squall_ast.show_lambda_ast s_reduced);
     exit 0
   with
-  | Squall_lexer.Lexical_error(str) ->
+  | Squall_lexer.Lexing_error(str) ->
     (localisation (Lexing.lexeme_start_p buf);
     eprintf "Lexing error@.";
     Printf.printf "%s\n" str;

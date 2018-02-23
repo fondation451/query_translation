@@ -5,7 +5,7 @@
   open Lexing;;
   open Squall_parser;;
 
-  exception Lexical_error of string;;
+  exception Lexing_error of string;;
 
   let id_or_keyword =
     let h = Hashtbl.create 17 in
@@ -34,12 +34,12 @@
       "what", WHAT;
       "how", HOW;
       "many", MANY;
-      (*
       "some", SOME;
       "every", EVERY;
       "no", NO;
       "at", AT;
       "least", LEAST;
+      (*
       "for", FOR;
       "there", THERE;
       "in", IN;
@@ -62,11 +62,22 @@ let ident = alpha (alpha | '_' | digit)*
 
 rule token = parse
   | '\n'
-    {newline lexbuf; token lexbuf}
+    { newline lexbuf; token lexbuf }
   | [' ' '\t' '\r']+
-    {token lexbuf}
+    { token lexbuf}
+  | ','
+    { COMA }
   | ident
-    {id_or_keyword (lexeme lexbuf)}
+    { id_or_keyword (lexeme lexbuf) }
+  | '0' | ['1'-'9'] digit* as num
+    {
+      let i =
+      try int_of_string num
+      with _ -> raise (Lexing_error "int overflow") in
+      if i > (1 lsl 31)-1 || i < -(1 lsl 31)
+      then raise (Lexing_error "int overflow")
+      else INTEGER(i)
+}
   | eof {EOF}
   | _
-    {raise (Lexical_error (lexeme lexbuf))}
+    { raise (Lexing_error (lexeme lexbuf)) }

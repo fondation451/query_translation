@@ -11,13 +11,16 @@
 
 (* TODO: Fix ambiguities *)
 (* TODO: Still not implemented *)
-(* %token THERE SOME EVERY NO AT LEAST FOR IN GRAPH *)
+(* %token IN GRAPH *)
 
 (* Misc *)
-%token THING EOF
+%token THING COMA EOF
 
 (* Queries *)
 %token WHETHER WHAT HOW MANY
+
+(* Quantifiers *)
+%token SOME EVERY NO AT LEAST THERE FOR
 
 (* Determinants *)
 %token A THE
@@ -31,6 +34,7 @@
 (* Relations *)
 %token THAT SUCH WHICH WHOSE OF WHERE
 
+%token <int> INTEGER
 %token <string> TERM
 
 %start parse_sentence
@@ -52,6 +56,18 @@ sentence:
   | WHETHER s=sentence
     (* ask s *)
     { LAsk s }
+  | FOR np=noun_phrase COMA s=sentence
+    (* np λx.s *)
+    {
+      let x = mk_var() in
+      LApp(np, LLam(x, s))
+    }
+  | THERE BE np=noun_phrase
+    (* np λx.true *)
+    {
+      let x = mk_var() in
+      LApp(np, LLam(x, LTrue))
+    }
 
 noun_phrase:
   | TERM
@@ -96,7 +112,7 @@ noun_phrase:
 *)
 
 determinant:
-  | A
+  | A | SOME
     (* λd1.λd2.(exists (and d1 d2 )) *)
     {
       let d1 = mk_var() in
@@ -123,6 +139,27 @@ determinant:
       let d1 = mk_var() in
       let d2 = mk_var() in
       LLam(d1, LLam(d2, LCount(LAnd(LVar d1, LVar d2))))
+    }
+  | EVERY
+    (* λd1.λd2.(forall d1 d2) *)
+    {
+      let d1 = mk_var() in
+      let d2 = mk_var() in
+      LLam(d1, LLam(d2, LForall(LVar d1, LVar d2)))
+    }
+  | NO
+    (* λd1.λd2.(not (exists (and d1 d2))) *)
+    {
+      let d1 = mk_var() in
+      let d2 = mk_var() in
+      LLam(d1, LLam(d2, LNot(LExists(LAnd(LVar d1, LVar d2)))))
+    }
+  | AT LEAST i=INTEGER
+    (* λd1.λd2.(atleast i (and d1 d2)) *)
+    {
+      let d1 = mk_var() in
+      let d2 = mk_var() in
+      LLam(d1, LLam(d2, (LAtleast(i, LAnd(LVar d1, LVar d2)))))
     }
 
 
