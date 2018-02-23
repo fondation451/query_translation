@@ -26,7 +26,6 @@ and substitute s x v = match s with
   | LAnd(s1, s2) -> LAnd(substitute s1 x v, substitute s2 x v)
   | LOr(s1, s2) -> LOr(substitute s1 x v, substitute s2 x v)
   | LOption(s1) -> LOption(substitute s1 x v)
-
   | LInit s -> LInit(substitute s x v)
   | LExists s -> LExists(substitute s x v)
   | LThe(s1, s2) -> LThe(substitute s1 x v, substitute s2 x v)
@@ -35,3 +34,6 @@ and substitute s x v = match s with
   | LBind(s1, s2) -> LBind(substitute s1 x v, substitute s2 x v)
   | LWhere(s1, s2) -> LWhere(substitute s1 x v, substitute s2 x v)
   | LEq(s1, s2) -> LEq(substitute s1 x v, substitute s2 x v)
+  | LAsk s -> LAsk(substitute s x v)
+  | LSelect s -> LSelect(substitute s x v)
+  | LCount s -> LCount(substitute s x v)
