@@ -19,3 +19,6 @@ and lambda_ast =
 
 [@@deriving show { with_path = false }]
 ;;
+
+let unit_val = assert false;;
+let true_fun = LLam("_", LTrue);;

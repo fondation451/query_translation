@@ -2,8 +2,6 @@
 
 open Squall_ast
 
-exception App_No_Lambda
-
 let rec reduction s = match s with
   | LApp(s1, s2) -> begin
     match s1 with
