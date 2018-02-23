@@ -3,8 +3,10 @@
 let mk_var =
   let cpt = ref 0 in fun () -> incr cpt; "__x__" ^ (string_of_int !cpt)
 
+
 type lambda_term =
   | LVar of string
+  | LInt of int
   | LApp of lambda_ast * lambda_ast
   | LLam of string * lambda_ast
   | LStat of lambda_ast * lambda_ast * lambda_ast
@@ -26,8 +28,21 @@ type lambda_term =
   | LForall of lambda_ast * lambda_ast
   | LAtleast of int * lambda_ast
 
+  (* Mes Rajouts *)
+  |LTriple of lambda_ast * lambda_ast * lambda_ast
+  |LPred2 of pred * lambda_ast * lambda_ast
+  |LPred1 of pred * lambda_ast
+  |LAggreg of string * lambda_ast * lambda_ast * lambda_ast list
+
 and lambda_ast =
   lambda_term
+
+and  pred =
+  |Pred_EQ
+  |Pred_LT
+  |Pred_LE
+  |Pred_GT
+  |Pred_GE
 
 [@@deriving show { with_path = false }]
 ;;
