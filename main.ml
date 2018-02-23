@@ -65,8 +65,6 @@ let () =
     exit 1
   end;
 
-  let f_name = Filename.remove_extension !input_file in
-
   let content =
     !input_file
     |> file_to_string
@@ -76,9 +74,9 @@ let () =
   let buf = Lexing.from_string content in
 
   try
-    let s = Squall_parser.sentence Squall_lexer.token buf in
+    let s = Squall_parser.parse_sentence Squall_lexer.token buf in
     Printf.printf "Lambda :\n\n%s\n" (Squall_ast.show_lambda_ast s);
-    let s_reduced = Squall_reduction.reduction s in
+    let s_reduced = Squall_reduction.beta_reduce s in
     Printf.printf "Reduced :\n\n%s\n" (Squall_ast.show_lambda_ast s_reduced);
     exit 0
   with

@@ -10,10 +10,12 @@
   let id_or_keyword =
     let h = Hashtbl.create 17 in
     List.iter (fun (s,k) -> Hashtbl.add h s k) [
+      (*
       "not", NOT;
       "and", AND;
       "or", OR;
       "maybe", MAYBE;
+      *)
       "of", OF;
       "a", A;
       "an", A;
@@ -23,8 +25,8 @@
       "such", SUCH;
       "which", WHICH;
       "whose", WHOSE;
-      "is", IS;
-      "are", IS;
+      "is", BE;
+      "are", BE;
       "have", HAVE;
       "has", HAVE;
       "where", WHERE;
@@ -32,6 +34,7 @@
       "what", WHAT;
       "how", HOW;
       "many", MANY;
+      (*
       "some", SOME;
       "every", EVERY;
       "no", NO;
@@ -41,6 +44,7 @@
       "there", THERE;
       "in", IN;
       "graph", GRAPH
+      *)
     ];
     fun s -> try Hashtbl.find h s with Not_found -> TERM s
   ;;
@@ -57,12 +61,12 @@ let digit = ['0'-'9']
 let ident = alpha (alpha | '_' | digit)*
 
 rule token = parse
-  |'\n'
+  | '\n'
     {newline lexbuf; token lexbuf}
-  |[' ' '\t' '\r']+
+  | [' ' '\t' '\r']+
     {token lexbuf}
-  |ident
+  | ident
     {id_or_keyword (lexeme lexbuf)}
-  |eof {EOF}
-  |_
+  | eof {EOF}
+  | _
     {raise (Lexical_error (lexeme lexbuf))}
