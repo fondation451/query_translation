@@ -13,6 +13,14 @@ type lambda_term =
   | LAnd of lambda_ast * lambda_ast
   | LOr of lambda_ast * lambda_ast
   | LOption of lambda_ast
+  | LInit of lambda_ast
+  | LExists of lambda_ast
+  | LThe of lambda_ast * lambda_ast
+  | LThing
+  | LTrue
+  | LBind of lambda_ast * lambda_ast
+  | LWhere of lambda_ast * lambda_ast
+  | LEq of lambda_ast * lambda_ast
 
 and lambda_ast =
   lambda_term

@@ -10,10 +10,12 @@
   let id_or_keyword =
     let h = Hashtbl.create 17 in
     List.iter (fun (s,k) -> Hashtbl.add h s k) [
+      (*
       "not", NOT;
       "and", AND;
       "or", OR;
       "maybe", MAYBE;
+      *)
       "of", OF;
       "a", A;
       "an", A;
@@ -23,11 +25,12 @@
       "such", SUCH;
       "which", WHICH;
       "whose", WHOSE;
-      "is", IS;
-      "are", IS;
+      "is", BE;
+      "are", BE;
       "have", HAVE;
       "has", HAVE;
-      "where", WHERE;
+      "where", WHERE
+      (*
       "whether", WHETHER;
       "what", WHAT;
       "how", HOW;
@@ -41,6 +44,7 @@
       "there", THERE;
       "in", IN;
       "graph", GRAPH
+      *)
     ];
     fun s -> try Hashtbl.find h s with Not_found -> TERM s
   ;;
