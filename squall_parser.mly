@@ -70,11 +70,11 @@ sentence:
     }
 
 noun_phrase:
-  | TERM
+  | term=TERM
     (* λd.(d term) *)
     {
       let x = mk_var() in
-      LLam(x, (LApp(LVar x, LVar $1)))
+      LLam(x, (LApp(LVar x, LVar term)))
     }
   | det=determinant ng1=nominal_group1
     (* λd.(det (init ng1 ) d) *)
@@ -243,19 +243,19 @@ relative:
     }
 
 unary_predicate:
-  | TERM
+  | term=TERM
   {
     let x = mk_var () in
-    LLam(x, LStat(LVar x, LVar("rdf:type"), LVar $1))
+    LLam(x, LStat(LVar x, LVar("rdf:type"), LVar term))
   }
 ;
 
 binary_predicate:
-  | TERM
+  | term=TERM
   {
     let x = mk_var () in
     let y = mk_var () in
-    LLam(x, LLam(y, LStat(LVar x, LVar $1, LVar y)))
+    LLam(x, LLam(y, LStat(LVar x, LVar term, LVar y)))
   }
 
 verb_phrase:

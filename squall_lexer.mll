@@ -39,9 +39,9 @@
       "no", NO;
       "at", AT;
       "least", LEAST;
-      (*
       "for", FOR;
-      "there", THERE;
+      "there", THERE
+      (*
       "in", IN;
       "graph", GRAPH
       *)

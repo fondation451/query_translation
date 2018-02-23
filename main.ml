@@ -12,18 +12,25 @@ let output_file = ref ""
 
 let usage = "usage: squallc [options] file.txt"
 
+let report_loc (b, e) =
+  let l = b.pos_lnum in
+  let fc = b.pos_cnum - b.pos_bol + 1 in
+  let lc = e.pos_cnum - b.pos_bol + 1 in
+  eprintf "Line %d, characters %d-%d:\n" l fc lc
+
+let report_loc_with_marker offset (b, e) =
+  let fc = b.pos_cnum - b.pos_bol + 1 in
+  let lc = e.pos_cnum - b.pos_bol + 1 in
+  let marker = Bytes.make (lc + offset) ' ' in
+  Bytes.fill marker (fc + offset) (lc - fc) '^';
+  eprintf "%s\n" (Bytes.to_string marker);
+
 let set_file f s = f := s
 
 let options = [
   "--parse-only", Arg.Set parse_only, "  Execute only syntactic analysis";
   "-v", Arg.Set verbose, "  Verbose mode"
 ]
-
-let localisation pos =
-  let l = pos.pos_lnum in
-  let c = pos.pos_cnum - pos.pos_bol + 1 in
-  eprintf "File \"%s\", line %d, characters %d-%d:\n" !input_file l (c-1) c
-
 
 let file_to_string file =
   let f = open_in file in
@@ -36,52 +43,55 @@ let file_to_string file =
   close_in f;
   out
 
-let string_of_char c = String.make 1 c
-
-let preprocess_str str =
-  let len = String.length str in
-  let punctuation = ['.' ; ',' ; ';' ; '?' ; '!' ; '"'] in
-  let rec loop i out =
-    if i >= len then
-      out
-    else if List.mem (String.get str i) punctuation then
-      loop (i+1) out
-    else
-      loop (i+1) (out ^ (string_of_char (String.get str i)))
-  in loop 0 ""
-
 let () =
   Arg.parse options (set_file input_file) usage;
 
   if !input_file = "" then begin
-    eprintf "No file to compile\n@?";
-    Arg.usage options usage;
-    exit 1
-  end;
+    Printf.printf "Starting interactive mode.\n";
+    while true do
+      Printf.printf ">>> ";
+      let query = read_line() in
+      let buf = Lexing.from_string query in
+      try
+        let s = Squall_parser.parse_sentence Squall_lexer.token buf in
+        Printf.printf "(********** Lambda **********)\n%s\n"
+          (Squall_ast.show_lambda_ast s);
+        let s_reduced = Squall_rewriting.beta_reduce s in
+        Printf.printf "(********** Reduced **********)\n%s\n\n"
+          (Squall_ast.show_lambda_ast s_reduced);
+      with
+      | Squall_lexer.Lexing_error(str) ->
+        report_loc_with_marker 3 (lexeme_start_p buf, lexeme_end_p buf);
+        eprintf "Lexing error : %s\n@." str;
+      | Squall_parser.Error ->
+        report_loc_with_marker 3(lexeme_start_p buf, lexeme_end_p buf);
+        eprintf "Syntax error\n@.";
+    done;
+  end
+  else begin
+    if not (Filename.check_suffix !input_file ".txt") then begin
+      eprintf "The input file must be a .txt\n@?";
+      Arg.usage options usage;
+      exit 1
+    end;
 
-  if not (Filename.check_suffix !input_file ".txt") then begin
-    eprintf "The input file must be a .txt\n@?";
-    Arg.usage options usage;
-    exit 1
-  end;
+    let buf = Lexing.from_string (file_to_string !input_file) in
 
-  let content =
-    !input_file
-    |> file_to_string
-    |> preprocess_str
-  in
-
-  let buf = Lexing.from_string content in
-
-  try
-    let s = Squall_parser.parse_sentence Squall_lexer.token buf in
-    Printf.printf "Lambda :\n\n%s\n" (Squall_ast.show_lambda_ast s);
-    let s_reduced = Squall_rewriting.beta_reduce s in
-    Printf.printf "Reduced :\n\n%s\n" (Squall_ast.show_lambda_ast s_reduced);
-    exit 0
-  with
-  | Squall_lexer.Lexing_error(str) ->
-    (localisation (Lexing.lexeme_start_p buf);
-    eprintf "Lexing error@.";
-    Printf.printf "%s\n" str;
-    exit 1)
+    try
+      let s = Squall_parser.parse_sentence Squall_lexer.token buf in
+      Printf.printf "(********** Lambda **********)\n%s\n"
+        (Squall_ast.show_lambda_ast s);
+      let s_reduced = Squall_rewriting.beta_reduce s in
+      Printf.printf "(********** Reduced **********)\n%s\n\n"
+        (Squall_ast.show_lambda_ast s_reduced);
+      exit 0
+    with
+    | Squall_lexer.Lexing_error(str) ->
+      report_loc (lexeme_start_p buf, lexeme_end_p buf);
+      eprintf "Lexing error : %s\n@." str;
+      exit 1
+    | Squall_parser.Error ->
+      report_loc (lexeme_start_p buf, lexeme_end_p buf);
+      eprintf "Syntax error\n@.";
+      exit 1
+  end
