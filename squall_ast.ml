@@ -30,3 +30,7 @@ and lambda_ast =
   lambda_term
 
 [@@deriving show { with_path = false }]
+;;
+
+let unit_val = LTrue;;
+let true_fun = LLam("_", LTrue);;
