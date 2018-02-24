@@ -7,9 +7,9 @@
 
   exception Lexing_error of string;;
 
-  let id_or_keyword =
+  let kwds =
     let h = Hashtbl.create 17 in
-    List.iter (fun (s,k) -> Hashtbl.add h s k) [
+    let () = List.iter (fun (s,k) -> Hashtbl.add h s k) [
       (*
       "not", NOT;
       "and", AND;
@@ -45,9 +45,22 @@
       "in", IN;
       "graph", GRAPH
       *)
-    ];
-    fun s -> try Hashtbl.find h s with Not_found -> TERM s
-  ;;
+    ] in
+    h
+
+  let classes =
+    let h = Hashtbl.create 17 in
+    let () = List.iter (fun (s,k) -> Hashtbl.add h s k) [
+      "List", "rdf:List"
+    ] in
+    h
+
+  let properties =
+    let h = Hashtbl.create 17 in
+    let () = List.iter (fun (s,k) -> Hashtbl.add h s k) [
+      "type", "rdf:type"
+    ] in
+    h
 
   let newline lexbuf =
     let pos = lexbuf.lex_curr_p in
@@ -68,7 +81,17 @@ rule token = parse
   | ','
     { COMA }
   | ident
-    { id_or_keyword (lexeme lexbuf) }
+    {
+      let id = lexeme lexbuf in
+      try Hashtbl.find kwds id
+      with Not_found -> begin
+        try CLASS (Hashtbl.find classes id)
+        with Not_found -> begin
+          try PROPERTY (Hashtbl.find properties id)
+          with Not_found -> TERM id
+        end
+      end
+    }
   | '0' | ['1'-'9'] digit* as num
     {
       let i =

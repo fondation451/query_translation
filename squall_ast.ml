@@ -3,7 +3,6 @@
 let mk_var =
   let cpt = ref 0 in fun () -> incr cpt; "__x__" ^ (string_of_int !cpt)
 
-
 type lambda_term =
   | LVar of string
   | LInt of int
@@ -17,7 +16,7 @@ type lambda_term =
   | LInit of lambda_ast
   | LExists of lambda_ast
   | LThe of lambda_ast * lambda_ast
-  | LThing
+  | LThing of lambda_ast
   | LTrue
   | LBind of lambda_ast * lambda_ast
   | LWhere of lambda_ast * lambda_ast
@@ -45,7 +44,5 @@ and  pred =
   |Pred_GE
 
 [@@deriving show { with_path = false }]
-;;
 
-let unit_val = LTrue;;
 let true_fun = LLam("_", LTrue);;

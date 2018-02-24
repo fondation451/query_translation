@@ -27,7 +27,7 @@ and substitute s x v = match s with
   | LInit s -> LInit(substitute s x v)
   | LExists s -> LExists(substitute s x v)
   | LThe(s1, s2) -> LThe(substitute s1 x v, substitute s2 x v)
-  | LThing -> LThing
+  | LThing s -> LThing(substitute s x v)
   | LTrue -> LTrue
   | LBind(s1, s2) -> LBind(substitute s1 x v, substitute s2 x v)
   | LWhere(s1, s2) -> LWhere(substitute s1 x v, substitute s2 x v)

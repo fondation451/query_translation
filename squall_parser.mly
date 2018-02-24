@@ -36,6 +36,8 @@
 
 %token <int> INTEGER
 %token <string> TERM
+%token <string> CLASS
+%token <string> PROPERTY
 
 %start parse_sentence
 %type <Squall_ast.lambda_ast> parse_sentence
@@ -100,13 +102,13 @@ noun_phrase:
             LLam(x, LApp(det, init_ng2_x))),
           LVar d)))
     }
+(* TODO:
   | WHAT
-    (* λd.(select (and thing d)) *)
+    (* ≡ which thing *)
     {
       let d = mk_var() in
       LLam(d, LSelect(LAnd(LThing, LVar d)))
     }
-(* TODO:
     | WHOSE ng2=nominal_group2
     (* ≡ the ng2 of what *)
     {
@@ -167,9 +169,11 @@ determinant:
 
 
 nominal_group1:
+  (* TODO: (type inconsistency ?)
   | THING ar=appositions_and_relatives
     (* and thing ar *)
     { LAnd(LThing, ar) }
+  *)
   | p1=unary_predicate ar=appositions_and_relatives
     (* and p1 ar *)
     { LAnd(p1, ar) }
@@ -183,7 +187,6 @@ nominal_group2:
       LLam(x, LLam(y,
       LAnd(LApp(LApp(p2, LVar x), LVar y), LApp(ar, LVar y))))
     }
-
 
 appositions_and_relatives:
   | app=apposition rel=relative
@@ -246,19 +249,21 @@ relative:
     }
 
 unary_predicate:
-  | term=TERM
+  | uri=CLASS
+  (* λx.(type x uri ) *)
   {
     let x = mk_var () in
-    LLam(x, LStat(LVar x, LVar("rdf:type"), LVar term))
+    LLam(x, LStat(LVar x, LVar("rdf:type"), LVar uri))
   }
 ;
 
 binary_predicate:
-  | term=TERM
+  | uri=PROPERTY
+  (* λx.λy.(stat x uri y) *)
   {
     let x = mk_var () in
     let y = mk_var () in
-    LLam(x, LLam(y, LStat(LVar x, LVar term, LVar y)))
+    LLam(x, LLam(y, LStat(LVar x, LVar uri, LVar y)))
   }
 
 verb_phrase:
