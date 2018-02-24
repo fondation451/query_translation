@@ -197,7 +197,13 @@ appositions_and_relatives:
     { app }
 
 apposition:
-  (* TODO: uri case *)
+  | uri=PROPERTY
+  | uri=CLASS
+    (* λx.(eq x uri) *)
+    {
+      let x = mk_var() in
+      LEq(LVar x, LVar uri)
+    }
   (* TODO: Var case *)
   |
     (* λx.true *)
