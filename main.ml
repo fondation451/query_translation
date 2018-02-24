@@ -23,7 +23,7 @@ let report_loc_with_marker offset (b, e) =
   let lc = e.pos_cnum - b.pos_bol + 1 in
   let marker = Bytes.make (lc + offset) ' ' in
   Bytes.fill marker (fc + offset) (lc - fc) '^';
-  eprintf "%s\n" (Bytes.to_string marker)
+  eprintf "%s\n" (Bytes.to_string marker);
 
 let set_file f s = f := s
 
@@ -43,24 +43,6 @@ let file_to_string file =
   close_in f;
   out
 
-let process query =
-  let buf = Lexing.from_string query in
-  try
-    buf
-    |> Squall_parser.parse_sentence Squall_lexer.token
-    |> (fun s -> printf "(********** Lambda **********)\n%s\n" (Squall_ast.show_lambda_ast s); s)
-    |> Squall_rewriting.beta_reduce
-    |> (fun s -> printf "(********** Reduced **********)\n%s\n\n" (Squall_ast.show_lambda_ast s); s)
-    |> (fun s -> ())
-  with
-  | Squall_lexer.Lexing_error(str) ->
-    report_loc_with_marker 3 (lexeme_start_p buf, lexeme_end_p buf);
-    eprintf "Lexing error : %s\n@." str;
-  | Squall_parser.Error ->
-    report_loc_with_marker 3(lexeme_start_p buf, lexeme_end_p buf);
-    eprintf "Syntax error\n@.";
-;;
-
 let () =
   Arg.parse options (set_file input_file) usage;
 
@@ -68,7 +50,22 @@ let () =
     Printf.printf "Starting interactive mode.\n";
     while true do
       Printf.printf ">>> ";
-      process (read_line ())
+      let query = read_line() in
+      let buf = Lexing.from_string query in
+      try
+        let s = Squall_parser.parse_sentence Squall_lexer.token buf in
+        Printf.printf "(********** Lambda **********)\n%s\n"
+          (Squall_ast.show_lambda_ast s);
+        let s_reduced = Squall_rewriting.beta_reduce s in
+        Printf.printf "(********** Reduced **********)\n%s\n\n"
+          (Squall_ast.show_lambda_ast s_reduced);
+      with
+      | Squall_lexer.Lexing_error(str) ->
+        report_loc_with_marker 3 (lexeme_start_p buf, lexeme_end_p buf);
+        eprintf "Lexing error : %s\n@." str;
+      | Squall_parser.Error ->
+        report_loc_with_marker 3(lexeme_start_p buf, lexeme_end_p buf);
+        eprintf "Syntax error\n@.";
     done;
   end
   else begin
@@ -77,5 +74,24 @@ let () =
       Arg.usage options usage;
       exit 1
     end;
-    process (file_to_string !input_file)
+
+    let buf = Lexing.from_string (file_to_string !input_file) in
+
+    try
+      let s = Squall_parser.parse_sentence Squall_lexer.token buf in
+      Printf.printf "(********** Lambda **********)\n%s\n"
+        (Squall_ast.show_lambda_ast s);
+      let s_reduced = Squall_rewriting.beta_reduce s in
+      Printf.printf "(********** Reduced **********)\n%s\n\n"
+        (Squall_ast.show_lambda_ast s_reduced);
+      exit 0
+    with
+    | Squall_lexer.Lexing_error(str) ->
+      report_loc (lexeme_start_p buf, lexeme_end_p buf);
+      eprintf "Lexing error : %s\n@." str;
+      exit 1
+    | Squall_parser.Error ->
+      report_loc (lexeme_start_p buf, lexeme_end_p buf);
+      eprintf "Syntax error\n@.";
+      exit 1
   end
