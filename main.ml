@@ -23,7 +23,7 @@ let report_loc_with_marker offset (b, e) =
   let lc = e.pos_cnum - b.pos_bol + 1 in
   let marker = Bytes.make (lc + offset) ' ' in
   Bytes.fill marker (fc + offset) (lc - fc) '^';
-  eprintf "%s\n" (Bytes.to_string marker);
+  eprintf "%s\n" (Bytes.to_string marker)
 
 let set_file f s = f := s
 

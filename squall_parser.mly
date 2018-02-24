@@ -40,6 +40,9 @@
 %start parse_sentence
 %type <Squall_ast.lambda_ast> parse_sentence
 
+%left WHETHER
+%left WHERE
+
 %%
 
 parse_sentence:
