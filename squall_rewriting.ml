@@ -6,6 +6,7 @@ let rec beta_reduce s = match s with
   | LApp(s1, s2) -> begin
     match s1 with
     | LLam(x, s_lam) -> beta_reduce (substitute s_lam x s2)
+    | LAnd(sa1, sa2) -> beta_reduce (LAnd(LApp(sa1, s2), LApp(sa2, s2)))
     | _ ->
       let new_s = LApp(beta_reduce s1, beta_reduce s2) in
       if s <> new_s then
@@ -37,3 +38,10 @@ and substitute s x v = match s with
   | LCount s -> LCount(substitute s x v)
   | LForall(s1, s2) -> LForall(substitute s1 x v, substitute s2 x v)
   | LAtleast(i, s) -> LAtleast(i, substitute s x v)
+  | LInt(i) -> LInt(i)
+  |LTriple(s1, s2, s3) -> LTriple(substitute s1 x v, substitute s2 x v, substitute s3 x v)
+  |LPred2(pred, s1, s2) -> LPred2(pred, substitute s1 x v, substitute s2 x v)
+  |LPred1(pred, s1) -> LPred1(pred, substitute s1 x v)
+  |LAggreg(agg, s1, s2, s_l) -> LAggreg(agg, substitute s1 x v, substitute s2 x v, List.map (fun s' -> substitute s' x v) s_l)
+
+

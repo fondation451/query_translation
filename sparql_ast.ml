@@ -1,14 +1,14 @@
 (* SPARQL AST *)
 
-type ident = string;;
+type ident = string
 
-type pred = Squall_ast.pred;;
+and pred = Squall_ast.pred
 
-type agg = string;;
+and agg = string
 
-type prefix = ident * ident;;
+and prefix = ident * ident
 
-type graph_pattern =
+and graph_pattern =
   |GTRIPLET of ident * ident * ident
   |GBIND of ident * ident
   |GFILTER of pred * ident list
@@ -19,12 +19,12 @@ type graph_pattern =
   |GOPTIONAL of graph_pattern
   |GFILTER_NE of graph_pattern
   |GSEQUENCE of graph_pattern * graph_pattern
-;;
 
-type update_pattern = graph_pattern list * graph_pattern list * graph_pattern list;;
+and update_pattern = graph_pattern * graph_pattern * graph_pattern
 
-type request =
+and request =
   |ASK of graph_pattern
   |INS_DEL_UPD of update_pattern
-  |SELECT of graph_pattern
-;;
+  |SELECT of ident list * graph_pattern
+
+[@@deriving show { with_path = false }];;
