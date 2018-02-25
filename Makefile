@@ -1,5 +1,3 @@
-# MAKEFILE SQUALL PARSER
-
 SHELL      := bash
 TARGET     := main.native
 SQUALLC    := squallc
@@ -11,7 +9,7 @@ OCAMLBUILD :=\
     -use-menhir \
     -menhir "menhir -lg 1 -la 1 --explain" \
 
-.PHONY: all test clean
+.PHONY: all clean
 
 all:
 	@ $(OCAMLBUILD) -quiet $(TARGET)
