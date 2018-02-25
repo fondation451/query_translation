@@ -2,10 +2,10 @@
 
 {
 
-  open Lexing;;
-  open Squall_parser;;
+  open Lexing
+  open Squall_parser
 
-  exception Lexing_error of string;;
+  exception Lexing_error of string
 
   let kwds =
     let h = Hashtbl.create 17 in
@@ -48,18 +48,24 @@
     ] in
     h
 
+
+
   let classes =
     let h = Hashtbl.create 17 in
-    let () = List.iter (fun (s,k) -> Hashtbl.add h s k) [
-      "List", "rdf:List"
-    ] in
+    let classList = List.map
+      (fun l -> (List.hd (List.tl l)), List.hd l)
+      (Csv.load "schema/classes.csv")
+    in
+    let () = List.iter (fun (s,k) -> Hashtbl.add h s k) classList in
     h
 
   let properties =
     let h = Hashtbl.create 17 in
-    let () = List.iter (fun (s,k) -> Hashtbl.add h s k) [
-      "type", "rdf:type"
-    ] in
+    let propertyList = List.map
+      (fun l -> (List.hd (List.tl l)), List.hd l)
+      (Csv.load "schema/properties.csv")
+    in
+    let () = List.iter (fun (s,k) -> Hashtbl.add h s k) propertyList in
     h
 
   let newline lexbuf =
