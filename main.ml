@@ -75,6 +75,7 @@ let () =
       | Squall_parser.Error ->
         report_loc_with_marker 3(lexeme_start_p buf, lexeme_end_p buf);
         eprintf "Syntax error\n@.";
+      | _ -> eprintf "Compilation error\n@.";
     done;
   end
   else begin
