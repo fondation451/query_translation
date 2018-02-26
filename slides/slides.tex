@@ -12,7 +12,7 @@
 \begin{document}
 
 \defverbatim[colored]\lstI{
-\begin{lstlisting}[language=SQL, keywordstyle=\color{red}]
+\begin{lstlisting}[language=SQL, keywordstyle=\color{red}, basicstyle=\footnotesize]
 SELECT DISTINCT ?__x__59 WHERE {
   ?__x__59 rdf:type rdfs:Resource.
   FILTER NOT EXISTS {
@@ -62,11 +62,11 @@ SELECT DISTINCT ?__x__59 WHERE {
   \begin{frame}
     \frametitle{The compilation process}
     A sentence is compiled to a lambda term enriched with
-    some constructions from SQUALL :
+    some constructions from SQUALL or SPARQL:
     \begin{itemize}
-      \item query construction : "whose", "how many", "which",...
-      \item relational algebra : "and", "or",...
-      \item and constructions from SPARQL : "triple", "ask",...
+      \item query construction : \texttt{whose}, \texttt{how many}, \texttt{which},...
+      \item relational algebra : \texttt{and}, \texttt{or}, ...
+      \item and constructions from SPARQL: \texttt{triple}, \texttt{ask},...
     \end{itemize}
 
     The lambda term is then translated to a SPARQL query.
