@@ -97,7 +97,7 @@ and compile_graph f =
     )*)
     GSAWGB(
       zi_l, agg, y, retrieve_var x,
-      compile_graph (List.fold_left2 (fun out di zi -> LAnd(out, LApp(di, LVar(zi)))) d di_l zi_l)
+      compile_graph (List.fold_left2 (fun out di zi -> LAnd(out, LApp(di, LVar(zi)))) (LApp(d, LVar(y))) di_l zi_l)
     )
   |LTrue -> GEPSILON
   |LAnd(f1, f2) -> GSEQUENCE(compile_graph f1, compile_graph f2)
