@@ -28,8 +28,8 @@
 (* Verbs *)
 %token BE HAVE
 
-(* TODO: Relational *)
-(* %token NOT AND OR MAYBE *)
+(* Relational *)
+%token NOT AND OR MAYBE
 
 (* Relations *)
 %token THAT SUCH WHICH WHOSE OF WHERE
@@ -42,8 +42,15 @@
 %start parse_sentence
 %type <Squall_ast.lambda_ast> parse_sentence
 
+%left COMA
 %left WHETHER
+%left THAT
 %left WHERE
+
+
+%left OR
+%left AND
+%left NOT
 
 %%
 
@@ -52,7 +59,7 @@ parse_sentence:
 
 
 sentence:
-  | np=noun_phrase vp=verb_phrase
+  | np=delta(noun_phrase) vp=delta(verb_phrase)
     (* np vp *)
     { LApp(np, vp) }
   | s1=sentence WHERE s2=sentence
@@ -314,3 +321,10 @@ auxiliary_verb:
         let y = mk_var() in
         LLam(x, LApp(np, LLam(y, LApp(LApp(ng2, LVar y), LVar x))))
     }
+
+delta(syntagm):
+  | d1 = delta(syntagm) OR d2 = delta(syntagm) { LOr(d1, d2) }
+  | d1 = delta(syntagm) AND d2 = delta(syntagm) { LAnd(d1, d2) }
+  | NOT d1 = delta(syntagm) { LNot(d1) }
+  | MAYBE d1=syntagm { LOption(d1) }
+  | syntagm { $1 }

@@ -10,12 +10,10 @@
   let kwds =
     let h = Hashtbl.create 17 in
     let () = List.iter (fun (s,k) -> Hashtbl.add h s k) [
-      (*
       "not", NOT;
       "and", AND;
       "or", OR;
       "maybe", MAYBE;
-      *)
       "of", OF;
       "a", A;
       "an", A;
@@ -41,10 +39,6 @@
       "least", LEAST;
       "for", FOR;
       "there", THERE
-      (*
-      "in", IN;
-      "graph", GRAPH
-      *)
     ] in
     h
 
