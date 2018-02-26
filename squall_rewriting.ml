@@ -25,6 +25,8 @@ let rec beta_reduce s = match s with
     LSelect(LLam(y, LExists(LLam(x, s))))
   | LCount(LLam(x, LSelect(LLam(y, s)))) ->
     LSelect(LLam(y, LCount(LLam(x, s))))
+  | LAtleast(i, LLam(x, LSelect(LLam(y, s)))) ->
+    LSelect(LLam(y, LAtleast(i, LLam(x, s))))
   | _ -> s
 
 and substitute s x v = match s with
