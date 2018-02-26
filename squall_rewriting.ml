@@ -7,6 +7,9 @@ let rec beta_reduce s = match s with
     match s1 with
     | LLam(x, s_lam) -> beta_reduce (substitute s_lam x s2)
     | LAnd(sa1, sa2) -> beta_reduce (LAnd(LApp(sa1, s2), LApp(sa2, s2)))
+    | LNot(sn1) -> beta_reduce (LNot(LApp(sn1, s2)))
+    | LOr(so1, so2) -> beta_reduce (LOr(LApp(so1, s2), LApp(so2, s2)))
+    | LOption(so1) -> beta_reduce (LOption(LApp(so1, s2)))
     | _ ->
       let new_s = LApp(beta_reduce s1, beta_reduce s2) in
       if s <> new_s then
