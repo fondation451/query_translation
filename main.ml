@@ -62,7 +62,7 @@ let () =
         let s_sugar = To_sparql.remove_sugar s_reduced in
         Printf.printf "(********** Sugar Removed **********)\n%s\n\n"
           (Squall_ast.show_lambda_ast s_sugar);
-        let query_ast = To_sparql.compile_request s_sugar in
+        let query_ast = To_sparql.to_sparql s_sugar in
         Printf.printf "(********** QUERY AST **********)\n%s\n\n"
           (Sparql_ast.show_request query_ast);
         let query = Sparql_to_str.to_str query_ast in
@@ -96,7 +96,7 @@ let () =
       let s_sugar = To_sparql.remove_sugar s_reduced in
       Printf.printf "(********** Sugar Removed **********)\n%s\n\n"
         (Squall_ast.show_lambda_ast s_sugar);
-      let query_ast = To_sparql.compile_request s_sugar in
+      let query_ast = To_sparql.to_sparql s_sugar in
       Printf.printf "(********** QUERY AST **********)\n%s\n\n"
         (Sparql_ast.show_request query_ast);
       let query = Sparql_to_str.to_str query_ast in

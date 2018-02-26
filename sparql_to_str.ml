@@ -24,13 +24,22 @@ let rec from_request r buf =
     buf <<< "}\n"
   |INS_DEL_UPD(u) ->
     let i, d, g = u in
-    buf <<< "INSERT {\n";
-    from_graph i buf;
-    buf <<< "}\nDELETE {\n";
-    from_graph d buf;
-    buf <<< "}\nWHERE {\n";
-    from_graph g buf;
-    buf <<< "}\n"
+    if i <> GEPSILON then begin
+      buf <<< "INSERT {\n";
+      from_graph i buf;
+      buf <<< "}\n"
+    end;
+    if d <> GEPSILON then begin
+      Printf.printf "||||||||||||||||%s\n\n" (show_graph_pattern d);
+      buf <<< "DELETE {\n";
+      from_graph d buf;
+      buf <<< "}\n"
+    end;
+    if g <> GEPSILON then begin
+      buf <<< "WHERE {\n";
+      from_graph g buf;
+      buf <<< "}\n"
+    end
   |SELECT(v_l, g) ->
     buf <<< "SELECT ";
     List.iter (fun v -> buf <<< v; buf <<< " ") v_l;
@@ -57,8 +66,11 @@ and from_graph g buf =
     buf <<< x;
     buf <<< " \nWHERE {\n";
     from_graph g1 buf;
-    buf <<< "}\nGROUP BY ";
-    List.iter (fun zi -> buf <<< zi; buf <<< " ") z_l
+    buf <<< "}\n";
+    if z_l <> [] then begin
+      buf <<< "GROUP BY ";
+      List.iter (fun zi -> buf <<< zi; buf <<< " ") z_l
+    end
   |GEPSILON -> ()
   |GUNION(g1, g2) ->
     buf <<< "{\n";

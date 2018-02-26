@@ -136,3 +136,32 @@ and compile_update f =
     compile_update (LWhere((LApp(f2, LVar(v))), (LApp(f1, LVar(v)))))
   |_ -> raise (Not_A_Request "Compile_update")
 ;;
+
+let rec clean_request r =
+  match r with
+  |ASK(g) -> ASK(clean_graph_pattern g)
+  |INS_DEL_UPD(i, d, g) -> INS_DEL_UPD(clean_graph_pattern i, clean_graph_pattern d, clean_graph_pattern g)
+  |SELECT(id_l, g) -> SELECT(id_l, clean_graph_pattern g)
+and clean_graph_pattern g =
+  match g with
+  |GGRAPH(id1, g1) -> GGRAPH(id1, clean_graph_pattern g1)
+  |GSAWGB(id_l, agg, id1, id2, g1) -> GSAWGB(id_l, agg, id1, id2, clean_graph_pattern g1)
+  |GUNION(g1, g2) -> GUNION(clean_graph_pattern g1, clean_graph_pattern g2)
+  |GOPTIONAL(g1) -> GOPTIONAL(clean_graph_pattern g1)
+  |GFILTER_NE(g1) -> GFILTER_NE(clean_graph_pattern g1)
+  |GSEQUENCE(GEPSILON, g2) -> clean_graph_pattern g2
+  |GSEQUENCE(g1, GEPSILON) -> clean_graph_pattern g1
+  |GSEQUENCE(g1, g2) ->
+    let g1' = clean_graph_pattern g1 in
+    let g2' = clean_graph_pattern g2 in
+    if g1' = GEPSILON then
+      g2'
+    else if g2' = GEPSILON then
+      g1'
+    else GSEQUENCE(g1', g2')
+  |_ -> g
+;;
+
+let to_sparql t =
+  clean_request (compile_request t)
+;;
