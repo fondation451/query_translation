@@ -45,5 +45,5 @@ and  pred =
 [@@deriving show { with_path = false }]
 
 let thing = LLam("thing",
-  LStat(LVar "thing", LVar "rdf:type", LVar "rdfs:Ressource"))
+  LStat(LVar "thing", LVar "rdf:type", LVar "rdfs:Resource"))
 let true_fun = LLam("_", LTrue)
