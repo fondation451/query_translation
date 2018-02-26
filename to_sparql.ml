@@ -15,7 +15,16 @@ let rec remove_sugar t =
   match t with
   (* Les init servent juste pour les a barres... *)
   |LInit(t1) -> remove_sugar t1
-  |LStat(x, p, y) -> LTriple(remove_sugar x, remove_sugar p, remove_sugar y)
+  |LStat(x, p, y) ->
+    let t = mk_var () in
+    LExists(
+      LLam(
+        t,
+        List.fold_left
+          (fun out (uri, z) -> LAnd(out, LTriple(LVar(t), LVar(uri), z)))
+          LTrue
+          [("rdf:subject", x) ; ("rdf:predicate", p) ; ("rdf:object", y)]))
+  (* LTriple(remove_sugar x, remove_sugar p, remove_sugar y) *)
   |LVar(_) -> t
   |LInt(_) -> t
   |LApp(t1, t2) -> LApp(remove_sugar t1, remove_sugar t2)
