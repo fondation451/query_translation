@@ -1,0 +1,75 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+
+\usetheme{Warsaw}
+
+\author{Nicolas Assouad\and Cl\'ement Pascutto}
+\title[Controlled Language for Thymeflow]{Controlled Language Processing for Thymeflow\\A compilation of SQUALL to SPARQL}
+\date{\today}
+
+\begin{document}
+
+  \begin{frame}
+	   \titlepage
+  \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{frame}
+		\frametitle{Thymeflow and SPARQL}
+    Thymeflow is a Knowledge Base meant using the RDF specification for its data.
+    ~\\
+    These graphs are meant to be used with the SPARQL query language.
+    \begin{itemize}
+      \item [Exemples SPARQL]
+    \end{itemize}
+    ~\\
+    SPARQL can be complex and is not appropriate in the case of non-expert users, hence requires a user interface.
+	\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{frame}
+    \frametitle{A controlled query language: SQUALL}
+    Based on Squall project by Sebastien Ferré (Inria Rennes).
+
+    Goal:
+    \begin{itemize}
+      \item Have a simpler query language
+      \item This language has to be (at least nearly) as expressive as SPARQL
+    \end{itemize}
+    ~\\
+    SQUALL is a candidate:
+    \begin{itemize}
+      \item How many Person are an author of the book whose title is "Web Data" ?
+      \item What is a Book ?
+    \end{itemize}
+  \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{frame}
+    \frametitle{The compilation process}
+
+  \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{frame}
+    \frametitle{Results}
+
+  \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{frame}
+    \frametitle{Conclusion}
+    Some work is still to do :
+    \begin{itemize}
+      \item Add logical operators (\texttt{and}, \texttt{or}, \texttt{not})
+      \item Add variables (\texttt{?A}) to gain expressiveness
+      \item Add more synonyms to get closer to natural language
+    \end{itemize}
+
+  \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \centering
+  Questions ?
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}
