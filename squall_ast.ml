@@ -16,7 +16,6 @@ type lambda_term =
   | LInit of lambda_ast
   | LExists of lambda_ast
   | LThe of lambda_ast * lambda_ast
-  | LThing of lambda_ast
   | LTrue
   | LBind of lambda_ast * lambda_ast
   | LWhere of lambda_ast * lambda_ast
@@ -45,4 +44,6 @@ and  pred =
 
 [@@deriving show { with_path = false }]
 
-let true_fun = LLam("_", LTrue);;
+let thing = LLam("thing",
+  LStat(LVar "thing", LVar "rdf:type", LVar "rdfs:Ressource"))
+let true_fun = LLam("_", LTrue)

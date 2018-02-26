@@ -102,13 +102,13 @@ noun_phrase:
             LLam(x, LApp(det, init_ng2_x))),
           LVar d)))
     }
-(* TODO:
   | WHAT
     (* ≡ which thing *)
     {
       let d = mk_var() in
-      LLam(d, LSelect(LAnd(LThing, LVar d)))
+      LLam(d, LSelect(LAnd(thing, LVar d)))
     }
+(* TODO:
     | WHOSE ng2=nominal_group2
     (* ≡ the ng2 of what *)
     {
@@ -169,11 +169,9 @@ determinant:
 
 
 nominal_group1:
-  (* TODO: (type inconsistency ?)
   | THING ar=appositions_and_relatives
     (* and thing ar *)
-    { LAnd(LThing, ar) }
-  *)
+    { LAnd(thing, ar) }
   | p1=unary_predicate ar=appositions_and_relatives
     (* and p1 ar *)
     { LAnd(p1, ar) }
