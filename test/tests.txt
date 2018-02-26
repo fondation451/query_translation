@@ -23,3 +23,5 @@ what is the rdf:first of the term:sub whose rdf:rest is rdf:nil of A
 
 *** Compilation
 what is the name of the author of the Book whose title is Coq
+
+the title of A is "Compiler Design" and not is "Compiler desing"

@@ -41,7 +41,7 @@ let rec from_request r buf =
       buf <<< "}\n"
     end
   |SELECT(v_l, g) ->
-    buf <<< "SELECT ";
+    buf <<< "SELECT DISTINCT ";
     List.iter (fun v -> buf <<< v; buf <<< " ") v_l;
     buf <<< "WHERE {\n";
     from_graph g buf;
