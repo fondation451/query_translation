@@ -48,8 +48,6 @@
     ] in
     h
 
-
-
   let classes =
     let h = Hashtbl.create 17 in
     let classList = List.map
@@ -71,10 +69,18 @@
   let newline lexbuf =
     let pos = lexbuf.lex_curr_p in
     lexbuf.lex_curr_p <- {pos with pos_lnum = pos.pos_lnum + 1; pos_bol = pos.pos_cnum}
-  ;;
+
+  let reg_of_esc = function
+      | '\\' -> '\\'
+      | 'n' -> '\n'
+      | 't' -> '\t'
+      | '"' -> '"'
+      | _ -> failwith "reg_of_esc"
 
 }
 
+let regCar = [' '-'!'] | ['#'-'['] | [']'-'~' ]
+let escCar = '\\' (['n' 't' '"' '\\'] as esc)
 let alpha = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
 let ident = alpha (alpha | '_' | digit)*
@@ -98,6 +104,12 @@ rule token = parse
         end
       end
     }
+  | '"'
+    {
+      let b = Buffer.create 0 in
+      let () = Buffer.add_char b '"' in
+      string_const b lexbuf
+    }
   | '0' | ['1'-'9'] digit* as num
     {
       let i =
@@ -110,3 +122,15 @@ rule token = parse
   | eof {EOF}
   | _
     { raise (Lexing_error (lexeme lexbuf)) }
+
+and string_const b = parse
+    | '"'               {
+                            Buffer.add_char b '"';
+                            TERM (Buffer.contents b)
+                        }
+    | regCar as c       { Buffer.add_char b c; string_const b lexbuf }
+    | escCar            {
+                            Buffer.add_char b (reg_of_esc esc);
+                            string_const b lexbuf
+                        }
+    | _                 { raise (Lexing_error "Invalid string character.")}

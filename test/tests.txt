@@ -1,0 +1,25 @@
+** Working
+what is the name of the author of A
+what is an author of every Book
+which Book has the author whose name is Bob
+how many Person are an author of A
+A has how many author
+what is a Book
+whether X has an author that worksFor Y
+there is a Book whose title is "A new book"
+
+** Still not working
+
+*** Syntax
+what is the label of a topic or is the title of a Book
+what is the label of a topic and is not the title of a Book
+the author-s of a Book have which name and maybe have which email
+A has title "Compiler Design" and not "Compiler desing".
+there is a Book whose title is "A new book" and whose author is B.
+what has a type that opt-trans-rdfs:subClassOf Book ?
+Collections and containers.
+what is the *last* of the authorList of A
+what is the rdf:first of the term:sub whose rdf:rest is rdf:nil of A
+
+*** Compilation
+what is the name of the author of the Book whose title is Coq
