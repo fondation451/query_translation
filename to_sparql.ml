@@ -15,7 +15,8 @@ let rec remove_sugar t =
   match t with
   (* Les init servent juste pour les a barres... *)
   |LInit(t1) -> remove_sugar t1
-  |LStat(x, p, y) ->
+  |LStat(x, p, y) -> LTriple(x, p, y)
+  (*
     let t = mk_var () in
     LExists(
       LLam(
@@ -24,6 +25,7 @@ let rec remove_sugar t =
           (fun out (uri, z) -> LAnd(out, LTriple(LVar(t), LVar(uri), z)))
           LTrue
           [("rdf:subject", x) ; ("rdf:predicate", p) ; ("rdf:object", y)]))
+  *)
   |LVar(_) -> t
   |LInt(_) -> t
   |LApp(t1, t2) -> LApp(remove_sugar t1, remove_sugar t2)
@@ -58,8 +60,8 @@ let rec remove_sugar t =
 
 let rec compile_request t =
   let t = Squall_rewriting.beta_reduce t in
-(*  Printf.printf "(++++++++ COMPILE REQUEST ++++++++)\n%s\n"
-    (Squall_ast.show_lambda_ast t); *)
+  Printf.printf "(++++++++ COMPILE REQUEST ++++++++)\n%s\n"
+    (Squall_ast.show_lambda_ast t);
   match t with
   |LAsk(f) -> ASK(compile_graph f)
   |LSelect(d) ->
@@ -69,8 +71,8 @@ let rec compile_request t =
 
 and compile_request_l v_l t =
   let t = Squall_rewriting.beta_reduce t in
-(*  Printf.printf "(++++++++ COMPILE REQUEST_L !!! ++++++++)\n%s\n"
-    (Squall_ast.show_lambda_ast t); *)
+  Printf.printf "(++++++++ COMPILE REQUEST_L !!! ++++++++)\n%s\n"
+    (Squall_ast.show_lambda_ast t);
   match t with
   |LSelect(d) ->
     let v = mk_var () in
@@ -79,8 +81,8 @@ and compile_request_l v_l t =
 
 and compile_graph f =
   let f = Squall_rewriting.beta_reduce f in
-(*  Printf.printf "(|||||||| COMPILE GRAPH ||||||||)\n%s\n"
-    (Squall_ast.show_lambda_ast f); *)
+  Printf.printf "(|||||||| COMPILE GRAPH ||||||||)\n%s\n"
+    (Squall_ast.show_lambda_ast f);
   match f with
   |LTriple(s, p, o) -> GTRIPLET(retrieve_var s, retrieve_var p, retrieve_var o)
   |LBind(x, y) -> GBIND(retrieve_var x, retrieve_var y)
@@ -107,8 +109,8 @@ and compile_graph f =
 
 and compile_update f =
   let f = Squall_rewriting.beta_reduce f in
-(*  Printf.printf "(-------- COMPILE UPDATE --------)\n%s\n"
-    (Squall_ast.show_lambda_ast f);*)
+  Printf.printf "(-------- COMPILE UPDATE --------)\n%s\n"
+    (Squall_ast.show_lambda_ast f);
   match f with
   |LTriple(s, p, o) -> GTRIPLET(retrieve_var s, retrieve_var p, retrieve_var o), GEPSILON, GEPSILON
   |LTrue -> GEPSILON, GEPSILON, GEPSILON
