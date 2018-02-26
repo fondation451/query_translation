@@ -28,7 +28,6 @@ let report_loc_with_marker offset (b, e) =
 let set_file f s = f := s
 
 let options = [
-  "--parse-only", Arg.Set parse_only, "  Execute only syntactic analysis";
   "-v", Arg.Set verbose, "  Verbose mode"
 ]
 
@@ -43,6 +42,30 @@ let file_to_string file =
   close_in f;
   out
 
+let process buf =
+  let s = Squall_parser.parse_sentence Squall_lexer.token buf in
+  if !verbose then  begin
+    Printf.printf "(********** Lambda **********)\n%s\n\n"
+    (Squall_ast.show_lambda_ast s)
+  end;
+  let s_reduced = Squall_rewriting.beta_reduce s in
+  if !verbose then  begin
+  Printf.printf "(********** Reduced **********)\n%s\n\n"
+    (Squall_ast.show_lambda_ast s_reduced)
+  end;
+  let s_sugar = To_sparql.remove_sugar s_reduced in
+  if !verbose then  begin
+  Printf.printf "(********** Sugar Removed **********)\n%s\n\n"
+    (Squall_ast.show_lambda_ast s_sugar)
+  end;
+  let query_ast = To_sparql.to_sparql s_sugar in
+  if !verbose then  begin
+  Printf.printf "(********** QUERY AST **********)\n%s\n\n"
+    (Sparql_ast.show_request query_ast)
+  end;
+  let query = Sparql_to_str.to_str query_ast in
+    Printf.printf "(********** QUERY AST **********)\n\n%s\n" query
+
 let () =
   Arg.parse options (set_file input_file) usage;
 
@@ -52,22 +75,7 @@ let () =
       Printf.printf ">>> ";
       let query = read_line() in
       let buf = Lexing.from_string query in
-      try
-        let s = Squall_parser.parse_sentence Squall_lexer.token buf in
-        Printf.printf "(********** Lambda **********)\n%s\n"
-          (Squall_ast.show_lambda_ast s);
-        let s_reduced = Squall_rewriting.beta_reduce s in
-        Printf.printf "(********** Reduced **********)\n%s\n\n"
-          (Squall_ast.show_lambda_ast s_reduced);
-        let s_sugar = To_sparql.remove_sugar s_reduced in
-        Printf.printf "(********** Sugar Removed **********)\n%s\n\n"
-          (Squall_ast.show_lambda_ast s_sugar);
-        let query_ast = To_sparql.to_sparql s_sugar in
-        Printf.printf "(********** QUERY AST **********)\n%s\n\n"
-          (Sparql_ast.show_request query_ast);
-        let query = Sparql_to_str.to_str query_ast in
-        Printf.printf "(********** QUERY AST **********)\n%s\n\n"
-          query;
+      try process buf
       with
       | Squall_lexer.Lexing_error(str) ->
         report_loc_with_marker 3 (lexeme_start_p buf, lexeme_end_p buf);
@@ -75,6 +83,8 @@ let () =
       | Squall_parser.Error ->
         report_loc_with_marker 3(lexeme_start_p buf, lexeme_end_p buf);
         eprintf "Syntax error\n@.";
+      | _ ->
+        eprintf "Compilation error\n@.";
     done;
   end
   else begin
@@ -87,21 +97,7 @@ let () =
     let buf = Lexing.from_string (file_to_string !input_file) in
 
     try
-      let s = Squall_parser.parse_sentence Squall_lexer.token buf in
-      Printf.printf "(********** Lambda **********)\n%s\n"
-        (Squall_ast.show_lambda_ast s);
-      let s_reduced = Squall_rewriting.beta_reduce s in
-      Printf.printf "(********** Reduced **********)\n%s\n\n"
-        (Squall_ast.show_lambda_ast s_reduced);
-      let s_sugar = To_sparql.remove_sugar s_reduced in
-      Printf.printf "(********** Sugar Removed **********)\n%s\n\n"
-        (Squall_ast.show_lambda_ast s_sugar);
-      let query_ast = To_sparql.to_sparql s_sugar in
-      Printf.printf "(********** QUERY AST **********)\n%s\n\n"
-        (Sparql_ast.show_request query_ast);
-      let query = Sparql_to_str.to_str query_ast in
-      Printf.printf "(********** QUERY AST **********)\n%s\n\n"
-        query;
+      let () = process buf in
       exit 0
     with
     | Squall_lexer.Lexing_error(str) ->
@@ -112,4 +108,6 @@ let () =
       report_loc (lexeme_start_p buf, lexeme_end_p buf);
       eprintf "Syntax error\n@.";
       exit 1
+    | _ ->
+      eprintf "Compilation error\n@.";
   end
