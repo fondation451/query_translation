@@ -64,7 +64,7 @@ let () =
           (Squall_ast.show_lambda_ast s_sugar);
         let query_ast = To_sparql.compile_request s_sugar in
         Printf.printf "(********** QUERY AST **********)\n%s\n\n"
-          (Sparql_ast.show_graph_pattern query_ast);
+          (Sparql_ast.show_request query_ast);
         let query = Sparql_to_str.to_str query_ast in
         Printf.printf "(********** QUERY AST **********)\n%s\n\n"
           query;
@@ -99,7 +99,7 @@ let () =
         (Squall_ast.show_lambda_ast s_sugar);
       let query_ast = To_sparql.compile_request s_sugar in
       Printf.printf "(********** QUERY AST **********)\n%s\n\n"
-        (Sparql_ast.show_graph_pattern query_ast);
+        (Sparql_ast.show_request query_ast);
       let query = Sparql_to_str.to_str query_ast in
       Printf.printf "(********** QUERY AST **********)\n%s\n\n"
         query;

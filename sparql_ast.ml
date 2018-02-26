@@ -19,8 +19,12 @@ and graph_pattern =
   |GOPTIONAL of graph_pattern
   |GFILTER_NE of graph_pattern
   |GSEQUENCE of graph_pattern * graph_pattern
+
+and update_pattern = graph_pattern * graph_pattern * graph_pattern
+
+and request =
   |ASK of graph_pattern
-  |INS_DEL_UPD of graph_pattern * graph_pattern * graph_pattern
+  |INS_DEL_UPD of update_pattern
   |SELECT of ident list * graph_pattern
 
 [@@deriving show { with_path = false }];;

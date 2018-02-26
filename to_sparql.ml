@@ -66,9 +66,7 @@ let rec compile_request t =
   |LSelect(d) ->
     let v = mk_var () in
     compile_request_l [v] (LApp(d, LVar(v)))
-  |f ->
-    let i, d, g = compile_update f in
-    INS_DEL_UPD(i, d, g)
+  |f -> INS_DEL_UPD(compile_update f)
 
 and compile_request_l v_l t =
   let t = Squall_rewriting.beta_reduce t in
@@ -136,6 +134,5 @@ and compile_update f =
   |LThe(f1, f2) ->
     let v = mk_var () in
     compile_update (LWhere((LApp(f2, LVar(v))), (LApp(f1, LVar(v)))))
-  |LSelect(_) -> (compile_request f, GEPSILON, GEPSILON)
   |_ -> raise (Not_A_Request "Compile_update")
 ;;
