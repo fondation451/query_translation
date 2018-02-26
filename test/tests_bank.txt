@@ -1,0 +1,8 @@
+what is the name of the author of A
+what is an author of every Book
+which Book has the author whose name is Bob
+how many Person are an author of A
+A has how many author
+what is a Book
+whether X has an author that worksFor Y
+there is a Book whose title is "A new book"

@@ -7,7 +7,7 @@ OCAMLBUILD :=\
     -j 4 \
     -use-ocamlfind \
     -use-menhir \
-    -menhir "menhir -lg 1 -la 1 --explain" \
+    -menhir "menhir 2>conflicts" \
 
 .PHONY: all clean
 
@@ -17,6 +17,6 @@ all:
 
 clean:
 	rm -f *~
-	rm -f tests/*.c tests/*.out
+	rm -f tests/*.rq
 	$(OCAMLBUILD) -clean
 	rm -f $(TARGET) $(SQUALLC)

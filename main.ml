@@ -63,8 +63,7 @@ let process buf =
   Printf.printf "(********** QUERY AST **********)\n%s\n\n"
     (Sparql_ast.show_request query_ast)
   end;
-  let query = Sparql_to_str.to_str query_ast in
-    Printf.printf "(********** QUERY AST **********)\n\n%s\n" query
+  Sparql_to_str.to_str query_ast
 
 let () =
   Arg.parse options (set_file input_file) usage;
@@ -75,7 +74,8 @@ let () =
       Printf.printf ">>> ";
       let query = read_line() in
       let buf = Lexing.from_string query in
-      try process buf
+      try let rq = process buf in
+        Printf.printf "\n%s\n" rq
       with
       | Squall_lexer.Lexing_error(str) ->
         report_loc_with_marker 3 (lexeme_start_p buf, lexeme_end_p buf);
@@ -94,10 +94,14 @@ let () =
       exit 1
     end;
 
+    let baseName = Filename.remove_extension !input_file in
+    let outputName = baseName ^ ".rq" in
     let buf = Lexing.from_string (file_to_string !input_file) in
 
     try
-      let () = process buf in
+      let rq = process buf in
+      let out = open_out outputName in
+      Printf.fprintf out "%s\n" rq;
       exit 0
     with
     | Squall_lexer.Lexing_error(str) ->

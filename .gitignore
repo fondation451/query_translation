@@ -5,3 +5,6 @@ squallc
 
 # VIM files
 *.swp
+
+# Output files
+test/*.rq
