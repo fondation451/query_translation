@@ -25,6 +25,21 @@ SELECT DISTINCT ?__x__59 WHERE {
 \end{lstlisting}
 }
 
+\defverbatim[colored]\lstA{
+\begin{lstlisting}[language=SQL, keywordstyle=\color{red}, basicstyle=\footnotesize]
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX type: <http://dbpedia.org/class/yago/>
+PREFIX prop: <http://dbpedia.org/property/>
+SELECT ?country_name ?population
+WHERE {
+    ?country a type:LandlockedCountries ;
+             rdfs:label ?country_name ;
+             prop:populationEstimate ?population .
+    FILTER (?population > 15000000) .
+}
+\end{lstlisting}
+}
+
   \begin{frame}
 	   \titlepage
   \end{frame}
@@ -35,9 +50,7 @@ SELECT DISTINCT ?__x__59 WHERE {
     Thymeflow is a Knowledge Base meant using the RDF specification for its data.
     ~\\
     These graphs are meant to be used with the SPARQL query language.
-    \begin{itemize}
-      \item [Exemples SPARQL]
-    \end{itemize}
+    \lstA
     ~\\
     SPARQL can be complex and is not appropriate in the case of non-expert users, hence requires a user interface.
 	\end{frame}
