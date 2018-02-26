@@ -1,0 +1,106 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{filecontents}
+\usepackage{hyperref}
+
+\begin{filecontents}{bib.bib}
+  @techreport{ferre:inria-00628427,
+    TITLE = {{SQUALL: a High-Level Language for Querying and Updating the Semantic Web}},
+    AUTHOR = {Ferr{\'e}, S{\'e}bastien},
+    URL = {https://hal.inria.fr/inria-00628427},
+    TYPE = {Research Report},
+    NUMBER = {PI-1985},
+    PAGES = {18},
+    YEAR = {2011},
+    MONTH = Sep,
+    KEYWORDS = {Semantic Web ; controlled natural language ; query language ; update language ; expressiveness ; Montague grammar},
+    PDF = {https://hal.inria.fr/inria-00628427/file/PI-1985.pdf},
+    HAL_ID = {inria-00628427},
+    HAL_VERSION = {v1},
+  }
+
+\end{filecontents}
+
+\usepackage{fancyhdr}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+
+\usepackage{enumerate}
+
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\usepackage{listings}
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,                    % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=SQL,                 % the language of the code
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\usepackage[top=3cm, bottom=3cm, left=3cm, right=3cm]{geometry}
+
+\author{Nicolas Assouad\and Cl\'ement Pascutto}
+\title{Controlled Language Processing for Thymeflow\\A compilation of SQUALL to SPARQL}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+Thymeflow est une plateforme de centralisation et de gestion de données basée sur le modèle RDF. Les insteractions avec Thymeflow se font donc naturellement en utilisant le langage de requête SPARQL, standard pour l'interrogration de des graphes RDF.
+
+Néanmoins, SPARQL est aussi difficile à prendre en main et constitue un obstacle pour les non experts, qui requierent une interface utilisateur.
+Le but de notre projet est de fournir une interface textuelle de langage controllé afin de rendre le système de requête de Thymeflow plus accessible aux profanes.\\
+
+
+Notre compilateur est basé sur les travaux de recherche de Sébastien Ferré (Irisa), notamment le compilateur SQUALL \cite{ferre:inria-00628427}. Le sous ensemble de la langue anglaise est interprété à l'aide d'une grammaire de Montague en modélisant le langage naturel comme grammaire formelle. Les différentes règles de la grammaire permettent de générer des termes de lambda calcul qui traduisent la sémantique de la phrase exprimée en langage naturel.\\
+
+Le lambda terme est ensuite réduit. Il contient la sémantique de la requête initiale, il peut alors être traduit dans un langage de requête, notamment SPARQL.\\
+
+Par exemple, la phrase "what is an author of every Book" une fois interprétée en lambda calcul puis compilée en requête SPARQL, donne la requête suivante :\\
+
+\begin{lstlisting}
+SELECT DISTINCT ?__x__59 WHERE {
+  ?__x__59 rdf:type rdfs:Resource.
+  FILTER NOT EXISTS {
+    ?__x__60 rdf:type http://schema.org/Book.
+    FILTER NOT EXISTS {
+      ?__x__60 http://schema.org/author ?__x__59.
+    }
+  }
+}
+\end{lstlisting}
+
+Notre compilateur permet une importation facile de schemas RDF externes. Il inclut en l'état actuel le graph RDF de \url{schema.org}.\\
+
+\bibliographystyle{alpha}
+\bibliography{bib}
+
+\end{document}

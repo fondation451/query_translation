@@ -1,0 +1,13 @@
+# LaTeX temporary files
+*.aux
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.bbl
+*.blg
+*.bib
+
+# PDF files
+*.pdf
