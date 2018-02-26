@@ -24,7 +24,6 @@ let rec remove_sugar t =
           (fun out (uri, z) -> LAnd(out, LTriple(LVar(t), LVar(uri), z)))
           LTrue
           [("rdf:subject", x) ; ("rdf:predicate", p) ; ("rdf:object", y)]))
-  (* LTriple(remove_sugar x, remove_sugar p, remove_sugar y) *)
   |LVar(_) -> t
   |LInt(_) -> t
   |LApp(t1, t2) -> LApp(remove_sugar t1, remove_sugar t2)
@@ -59,8 +58,8 @@ let rec remove_sugar t =
 
 let rec compile_request t =
   let t = Squall_rewriting.beta_reduce t in
-  Printf.printf "(++++++++ COMPILE REQUEST ++++++++)\n%s\n"
-    (Squall_ast.show_lambda_ast t);
+(*  Printf.printf "(++++++++ COMPILE REQUEST ++++++++)\n%s\n"
+    (Squall_ast.show_lambda_ast t); *)
   match t with
   |LAsk(f) -> ASK(compile_graph f)
   |LSelect(d) ->
@@ -70,8 +69,8 @@ let rec compile_request t =
 
 and compile_request_l v_l t =
   let t = Squall_rewriting.beta_reduce t in
-  Printf.printf "(++++++++ COMPILE REQUEST_L !!! ++++++++)\n%s\n"
-    (Squall_ast.show_lambda_ast t);
+(*  Printf.printf "(++++++++ COMPILE REQUEST_L !!! ++++++++)\n%s\n"
+    (Squall_ast.show_lambda_ast t); *)
   match t with
   |LSelect(d) ->
     let v = mk_var () in
@@ -80,8 +79,8 @@ and compile_request_l v_l t =
 
 and compile_graph f =
   let f = Squall_rewriting.beta_reduce f in
-  Printf.printf "(|||||||| COMPILE GRAPH ||||||||)\n%s\n"
-    (Squall_ast.show_lambda_ast f);
+(*  Printf.printf "(|||||||| COMPILE GRAPH ||||||||)\n%s\n"
+    (Squall_ast.show_lambda_ast f); *)
   match f with
   |LTriple(s, p, o) -> GTRIPLET(retrieve_var s, retrieve_var p, retrieve_var o)
   |LBind(x, y) -> GBIND(retrieve_var x, retrieve_var y)
@@ -91,10 +90,6 @@ and compile_graph f =
   |LAggreg(agg, x, d, di_l) ->
     let zi_l = List.map (fun di -> mk_var ()) di_l in
     let y = mk_var () in
-(*    GSAWGB(
-      zi_l, agg, y, retrieve_var x,
-      compile_graph (List.fold_left2 (fun out di zi -> LAnd(out, LApp(di, LVar(zi)))) (LApp(d, LVar(y))) di_l zi_l)
-    )*)
     GSAWGB(
       zi_l, agg, y, retrieve_var x,
       compile_graph (List.fold_left2 (fun out di zi -> LAnd(out, LApp(di, LVar(zi)))) (LApp(d, LVar(y))) di_l zi_l)
@@ -112,8 +107,8 @@ and compile_graph f =
 
 and compile_update f =
   let f = Squall_rewriting.beta_reduce f in
-  Printf.printf "(-------- COMPILE UPDATE --------)\n%s\n"
-    (Squall_ast.show_lambda_ast f);
+(*  Printf.printf "(-------- COMPILE UPDATE --------)\n%s\n"
+    (Squall_ast.show_lambda_ast f);*)
   match f with
   |LTriple(s, p, o) -> GTRIPLET(retrieve_var s, retrieve_var p, retrieve_var o), GEPSILON, GEPSILON
   |LTrue -> GEPSILON, GEPSILON, GEPSILON
