@@ -1,6 +1,7 @@
 \documentclass{beamer}
 
 \usepackage[utf8]{inputenc}
+\usepackage{listings}
 
 \usetheme{Warsaw}
 
@@ -9,6 +10,20 @@
 \date{\today}
 
 \begin{document}
+
+\defverbatim[colored]\lstI{
+\begin{lstlisting}[language=SQL, keywordstyle=\color{red}]
+SELECT DISTINCT ?__x__59 WHERE {
+  ?__x__59 rdf:type rdfs:Resource.
+  FILTER NOT EXISTS {
+    ?__x__60 rdf:type http://schema.org/Book.
+    FILTER NOT EXISTS {
+      ?__x__60 http://schema.org/author ?__x__59.
+    }
+  }
+}
+\end{lstlisting}
+}
 
   \begin{frame}
 	   \titlepage
@@ -46,12 +61,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \begin{frame}
     \frametitle{The compilation process}
+    A sentence is compiled to a lambda term enriched with
+    some constructions from SQUALL :
+    \begin{itemize}
+      \item query construction : "whose", "how many", "which",...
+      \item relational algebra : "and", "or",...
+      \item and constructions from SPARQL : "triple", "ask",...
+    \end{itemize}
+
+    The lambda term is then translated to a SPARQL query.
 
   \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \begin{frame}
     \frametitle{Results}
-
+    The query "what is an author of every Book" is compiled to :\\
+    \lstI
   \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \begin{frame}
