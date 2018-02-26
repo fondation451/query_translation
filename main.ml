@@ -59,6 +59,15 @@ let () =
         let s_reduced = Squall_rewriting.beta_reduce s in
         Printf.printf "(********** Reduced **********)\n%s\n\n"
           (Squall_ast.show_lambda_ast s_reduced);
+        let s_sugar = To_sparql.remove_sugar s_reduced in
+        Printf.printf "(********** Sugar Removed **********)\n%s\n\n"
+          (Squall_ast.show_lambda_ast s_sugar);
+        let query_ast = To_sparql.compile_request s_sugar in
+        Printf.printf "(********** QUERY AST **********)\n%s\n\n"
+          (Sparql_ast.show_request query_ast);
+        let query = Sparql_to_str.to_str query_ast in
+        Printf.printf "(********** QUERY AST **********)\n%s\n\n"
+          query;
       with
       | Squall_lexer.Lexing_error(str) ->
         report_loc_with_marker 3 (lexeme_start_p buf, lexeme_end_p buf);
