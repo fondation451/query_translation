@@ -17,6 +17,14 @@ let rec beta_reduce s = match s with
       else
         new_s
   end
+  | LAnd(LSelect(LLam(x, s1)), s2) -> LSelect(LLam(x, LAnd(s1, s2)))
+  | LOr(LSelect(LLam(x, s1)), s2) -> LSelect(LLam(x, LOr(s1, s2)))
+  | LNot(LSelect(LLam(x, s1))) -> LSelect(LLam(x, LNot s1))
+  | LOption(LSelect(LLam(x, s1))) -> LSelect(LLam(x, LOption s1))
+  | LExists(LLam(x, LSelect(LLam(y, s)))) ->
+    LSelect(LLam(y, LExists(LLam(x, s))))
+  | LCount(LLam(x, LSelect(LLam(y, s)))) ->
+    LSelect(LLam(y, LCount(LLam(x, s))))
   | _ -> s
 
 and substitute s x v = match s with
