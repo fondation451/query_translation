@@ -1,7 +1,7 @@
 (* SQUALL controlled language Lambda AST *)
 
 let mk_var =
-  let cpt = ref 0 in fun () -> incr cpt; "__x__" ^ (string_of_int !cpt)
+  let cpt = ref 0 in fun () -> incr cpt; "?__x__" ^ (string_of_int !cpt)
 
 type lambda_term =
   | LVar of string
