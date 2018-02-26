@@ -28,7 +28,6 @@ and substitute s x v = match s with
   | LInit s -> LInit(substitute s x v)
   | LExists s -> LExists(substitute s x v)
   | LThe(s1, s2) -> LThe(substitute s1 x v, substitute s2 x v)
-  | LThing s -> LThing(substitute s x v)
   | LTrue -> LTrue
   | LBind(s1, s2) -> LBind(substitute s1 x v, substitute s2 x v)
   | LWhere(s1, s2) -> LWhere(substitute s1 x v, substitute s2 x v)
@@ -43,5 +42,3 @@ and substitute s x v = match s with
   |LPred2(pred, s1, s2) -> LPred2(pred, substitute s1 x v, substitute s2 x v)
   |LPred1(pred, s1) -> LPred1(pred, substitute s1 x v)
   |LAggreg(agg, s1, s2, s_l) -> LAggreg(agg, substitute s1 x v, substitute s2 x v, List.map (fun s' -> substitute s' x v) s_l)
-
-

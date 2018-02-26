@@ -26,7 +26,6 @@ let rec remove_sugar t =
   |LOption(t1) -> LOption(remove_sugar t1)
   |LExists(t1) -> LExists(remove_sugar t1)
   |LThe(t1, t2) -> LThe(remove_sugar t1, remove_sugar t2)
-  |LThing(_) -> t
   |LTrue -> LTrue
   |LBind(t1, t2) -> LBind(remove_sugar t1, remove_sugar t2)
   |LWhere(t1, t2) -> LWhere(remove_sugar t1, remove_sugar t2)
